@@ -2,7 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Game;
+use App\Repository\GameRepository;
 use App\Service\RawgService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,5 +38,51 @@ final class SearchController extends AbstractController
         return $this->render('search/show.html.twig', [
             'game' => $game,
         ]);
+    }
+
+    #[Route('/search/{rawgId}/add', name: 'app_search_add', requirements: ['rawgId' => '\d+'], methods: ['POST'])]
+    public function add(
+        int $rawgId,
+        Request $request,
+        RawgService $rawgService,
+        GameRepository $gameRepository,
+        EntityManagerInterface $entityManager): Response
+    {
+
+        if (!$this->isCsrfTokenValid('add_game_' . $rawgId, $request->request->get('_token'))) {
+            $this->addFlash('danger', 'Token invalide.');
+            return $this->redirectToRoute('app_search');
+        }
+
+        $existingGame = $gameRepository->findOneBy(['rawgId' => $rawgId]);
+        if ($existingGame) {
+            $this->addFlash('warning', 'Ce jeu est déjà dans votre ludothèque.');
+            return $this->redirectToRoute('app_game_show', ['id' => $existingGame->getId()]);
+        }
+
+        $data = $rawgService->getGameById($rawgId);
+
+        $game = new Game();
+        $game->setRawgId($data['id']);
+        $game->setTitle($data['name']);
+        $game->setBackgroundImage($data['background_image'] ?? null);
+        $game->setReleased(isset($data['released']) ? new \DateTime($data['released']) : null);
+        $game->setPlaytime($data['playtime'] ?? null);
+        $game->setOverview($data['description_raw'] ?? null);
+
+        if (!empty($data['platforms'])) {
+            $platformNames = array_map(fn($p) => $p['platform']['name'], $data['platforms']);
+            $game->setPlatforms(implode(', ', $platformNames));
+        }
+
+        $game->setIsPlayed(false);
+        $game->setDescription(null);
+
+        $entityManager->persist($game);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Le jeu "' . $game->getTitle() . '" a été ajouté à votre ludothèque !');
+
+        return $this->redirectToRoute('app_game_update', ['id' => $game->getId()]);
     }
 }
