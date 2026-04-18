@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Recherche - GameStream{% endblock %}
+
+{% block body %}
+    {# ===== HEADER ===== #}
+    <header class="text-center py-4 border-bottom border-primary">
+        <h1 class="display-4 fw-bold text-primary">
+            <i class="bi bi-controller"></i> GameStream
+        </h1>
+        <p class="text-secondary">Votre ludothèque, partout, à tout moment.</p>
+    </header>
+
+    {# ===== NAVBAR ===== #}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-primary">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_game_index') }}">
+                            <i class="bi bi-controller"></i> Ludothèque
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ path('app_search') }}">
+                            <i class="bi bi-search"></i> Recherche
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {# ===== FORMULAIRE DE RECHERCHE ===== #}
+    <main class="container py-4">
+        <h2 class="mb-4 text-center">Rechercher un jeu</h2>
+
+        <form method="get" action="{{ path('app_search') }}" class="mb-4">
+            <div class="input-group mx-auto" style="max-width: 600px;">
+                <input type="text"
+                    name="q"
+                    value="{{ query }}"
+                    class="form-control form-control-lg rounded-start-pill"
+                    placeholder="Rechercher un jeu (ex: Zelda, Mario...)"
+                    autofocus>
+                <button type="submit" class="btn btn-primary rounded-end-pill px-4">
+                    <i class="bi bi-search"></i> Rechercher
+                </button>
+            </div>
+        </form>
+
+        {# ===== RÉSULTATS ===== #}
+        {% if query %}
+            {% if games is empty %}
+                <div class="alert alert-warning text-center">
+                    <i class="bi bi-exclamation-circle"></i>
+                    Aucun résultat pour « <strong>{{ query }}</strong> ». Essayez un autre titre.
+                </div>
+            {% else %}
+                <p class="text-secondary text-center mb-4">
+                    {{ games|length }} résultat(s) pour « <strong>{{ query }}</strong> »
+                </p>
+                <div class="row g-4 justify-content-center">
+                    {% for game in games %}
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <div class="card h-100 shadow rounded-4 overflow-hidden">
+                                {% if game.background_image %}
+                                    <img src="{{ game.background_image }}"
+                                        class="card-img-top"
+                                        alt="{{ game.name }}"
+                                        style="height: 200px; object-fit: cover;">
+                                {% else %}
+                                    <div class="card-img-top d-flex align-items-center justify-content-center bg-secondary" style="height: 200px;">
+                                        <i class="bi bi-controller" style="font-size: 4rem;"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="card-body">
+                                    <h5 class="card-title text-truncate">{{ game.name }}</h5>
+                                    <small class="text-secondary">
+                                        <i class="bi bi-calendar"></i>
+                                        {{ game.released ? game.released|date('Y') : 'n/c' }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endif %}
+    </main>
+
+    {# ===== FOOTER ===== #}
+    <footer class="text-center py-4 mt-5 border-top border-primary">
+        <p class="text-secondary mb-0">© 2026 GameStream - Votre ludothèque personnelle</p>
+    </footer>
+{% endblock %}
