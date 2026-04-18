@@ -28,17 +28,6 @@
             </div>
         </div>
     </nav>
-{# ===== MESSAGES FLASH ===== #}
-    {% for label, messages in app.flashes %}
-        {% for message in messages %}
-        <div class="container pt-3">
-            <div class="alert alert-{{ label == 'success' ? 'success' : 'danger' }} alert-dismissible fade show text-center" role="alert">
-                <i class="bi bi-check-circle"></i> {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        </div>
-    {% endfor %}
-{% endfor %}
 
 {# ===== FILTRES PAR GENRE ===== #}
 <div class="container py-3">

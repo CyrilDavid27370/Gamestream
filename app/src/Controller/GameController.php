@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Game;
+use App\Form\GameType;
 use App\Repository\GameRepository;
 use App\Repository\GenreRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -57,5 +58,24 @@ final class GameController extends AbstractController
     }
 
             return $this->redirectToRoute('app_game_index');
-}
+    }
+
+    #[Route('/game/{id}/update', name: 'app_game_update', requirements: ['id' => '\d+'])]
+    public function update(Request $request, Game $game, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(GameType::class, $game);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le jeu "' . $game->getTitle() . '" a été mis à jour.');
+            return $this->redirectToRoute('app_game_show', ['id' => $game->getId()]);
+        }
+
+        return $this->render('game/update.html.twig', [
+            'form' => $form,
+            'game' => $game,
+        ]);
+    }
 }
