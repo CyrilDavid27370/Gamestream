@@ -54,9 +54,14 @@
                                 <a href="#" class="btn btn-outline-warning btn-sm">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <a href="#" class="btn btn-outline-danger btn-sm">
-                                    <i class="bi bi-x-lg"></i>
-                                </a>
+                                <form method="post" action="{{ path('app_game_delete', {id: game.id}) }}"
+                                onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer « {{ game.title }} » de votre ludothèque ?')"
+                                style="display: inline;">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ game.id) }}">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </form>
                             </div>
                         </div>
 
