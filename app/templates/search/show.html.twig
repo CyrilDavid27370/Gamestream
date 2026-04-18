@@ -1,0 +1,134 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ game.name }} - GameStream{% endblock %}
+
+{% block body %}
+    {# ===== HEADER ===== #}
+    <header class="text-center py-4 border-bottom border-primary">
+        <h1 class="display-4 fw-bold text-primary">
+            <i class="bi bi-controller"></i> GameStream
+        </h1>
+        <p class="text-secondary">Votre ludothèque, partout, à tout moment.</p>
+    </header>
+
+    {# ===== NAVBAR ===== #}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-primary">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_game_index') }}">
+                            <i class="bi bi-controller"></i> Ludothèque
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ path('app_search') }}">
+                            <i class="bi bi-search"></i> Recherche
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {# ===== FICHE RAWG DU JEU ===== #}
+    <main class="container py-4">
+        <div class="card shadow rounded-4 overflow-hidden border border-primary" style="max-width: 900px; margin: 0 auto;">
+            <div class="row g-0">
+                {# Image à gauche #}
+                <div class="col-md-4">
+                    {% if game.background_image %}
+                        <div class="position-relative h-100" style="min-height: 400px; overflow: hidden;">
+                            {# Arrière-plan flou #}
+                            <div style="position: absolute; inset: 0; background-image: url('{{ game.background_image }}'); background-size: cover; background-position: center; filter: blur(20px); transform: scale(1.1);"></div>
+                            {# Image principale en contain #}
+                            <img src="{{ game.background_image }}"
+                                alt="{{ game.name }}"
+                                style="position: relative; width: 100%; height: 100%; object-fit: contain; z-index: 1;">
+                        </div>
+                    {% else %}
+                        <div class="d-flex align-items-center justify-content-center bg-secondary h-100" style="min-height: 300px;">
+                            <i class="bi bi-controller" style="font-size: 5rem;"></i>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# Détails à droite #}
+                <div class="col-md-8">
+                    <div class="card-body">
+                        {# En-tête avec titre + bouton ajouter #}
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h2 class="text-primary mb-0">{{ game.name }}</h2>
+                            <a href="#" class="btn btn-outline-success btn-sm">
+                                <i class="bi bi-plus-lg"></i>
+                            </a>
+                        </div>
+
+                        {# Métadonnées #}
+                        <p class="text-secondary mb-3">
+                            <i class="bi bi-calendar"></i> {{ game.released ? game.released|date('Y') : 'n/c' }}
+                            {% if game.playtime %}
+                                | <i class="bi bi-clock"></i> {{ game.playtime }}h
+                            {% endif %}
+                            {% if game.genres is defined and game.genres is not empty %}
+                                | <i class="bi bi-tag"></i>
+                                {% for genre in game.genres %}
+                                    {{ genre.name }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </p>
+
+                        {# Plateformes #}
+                        {% if game.platforms is defined and game.platforms is not empty %}
+                            <p class="text-secondary mb-3">
+                                <i class="bi bi-pc-display"></i> <strong>Plateformes :</strong>
+                                {% for p in game.platforms %}
+                                    {{ p.platform.name }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </p>
+                        {% endif %}
+
+                        {# Note RAWG #}
+                        {% if game.rating %}
+                            <p class="mb-3">
+                                <span class="badge bg-warning fs-6">
+                                    <i class="bi bi-star-fill"></i> {{ game.rating }}/5
+                                </span>
+                                {% if game.ratings_count %}
+                                    <small class="text-secondary">({{ game.ratings_count }} votes)</small>
+                                {% endif %}
+                            </p>
+                        {% endif %}
+
+                        {# Synopsis #}
+                        <div>
+                            <h6 class="text-primary"><i class="bi bi-file-text"></i> Synopsis</h6>
+                            <p class="text-light">
+                                {% if game.description_raw %}
+                                    {{ game.description_raw|slice(0, 500) }}{% if game.description_raw|length > 500 %}...{% endif %}
+                                {% else %}
+                                    Aucun synopsis disponible.
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Bouton retour #}
+        <div class="text-center mt-4">
+            <a href="{{ path('app_search') }}" class="btn btn-outline-primary rounded-pill">
+                <i class="bi bi-arrow-left"></i> Retour à la recherche
+            </a>
+        </div>
+    </main>
+
+    {# ===== FOOTER ===== #}
+    <footer class="text-center py-4 mt-5 border-top border-primary">
+        <p class="text-secondary mb-0">© 2026 GameStream - Votre ludothèque personnelle</p>
+    </footer>
+{% endblock %}

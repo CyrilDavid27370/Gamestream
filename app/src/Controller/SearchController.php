@@ -26,4 +26,14 @@ final class SearchController extends AbstractController
             'games' => $games,
         ]);
     }
+
+    #[Route('/search/{rawgId}', name: 'app_search_show', requirements: ['rawgId' => '\d+'])]
+    public function show(int $rawgId, RawgService $rawgService): Response
+    {
+        $game = $rawgService->getGameById($rawgId);
+
+        return $this->render('search/show.html.twig', [
+            'game' => $game,
+        ]);
+    }
 }
