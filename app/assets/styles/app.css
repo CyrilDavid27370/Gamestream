@@ -1,0 +1,21 @@
+/* ===== BOOTSTRAP VAPOR ===== */
+@import url('./vapor.css');
+
+/* ===== BOOTSTRAP ICONS ===== */
+@import url('./bootstrap-icons.css');
+
+/* ===== STYLES CUSTOM GAMESTREAM ===== */
+
+body {
+    min-height: 100vh;
+}
+
+/* Hover sur les cartes de jeux */
+.card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 30px rgba(172, 107, 238, 0.4);
+}
