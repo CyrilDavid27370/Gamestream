@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Catégories - GameStream{% endblock %}
+
+{% block body %}
+    <main class="container py-4">
+        <div class="text-center mb-4">
+            <h2 class="mb-4">Mes catégories</h2>
+            <a href="{{ path('app_genre_new') }}" class="btn btn-primary rounded-pill">
+                <i class="bi bi-plus-lg"></i> Nouvelle catégorie
+            </a>
+        </div>
+
+        {% if genres is empty %}
+            <div class="alert alert-info text-center">
+                <i class="bi bi-tags fs-1"></i>
+                <p class="mt-2 mb-0">Aucune catégorie. Créez votre première !</p>
+            </div>
+        {% else %}
+            <div class="card shadow rounded-4 overflow-hidden border border-primary" style="max-width: 700px; margin: 0 auto;">
+                <table class="table table-dark table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nom</th>
+                            <th scope="col" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for genre in genres %}
+                            <tr>
+                                <td>{{ genre.name }}</td>
+                                <td class="text-end">
+                                    <a href="{{ path('app_genre_edit', {id: genre.id}) }}"
+                                    class="btn btn-outline-warning btn-sm"
+                                    title="Modifier">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form method="post"
+                                        action="{{ path('app_genre_delete', {id: genre.id}) }}"
+                                        onsubmit="return confirm('Supprimer la catégorie « {{ genre.name }} » ?')"
+                                        style="display: inline;">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete_genre_' ~ genre.id) }}">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Supprimer">
+                                            <i class="bi bi-x-lg"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </main>
+{% endblock %}

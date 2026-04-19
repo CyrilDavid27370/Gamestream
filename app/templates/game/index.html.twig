@@ -3,59 +3,28 @@
 {% block title %}GameStream - Ma ludothèque{% endblock %}
 
 {% block body %}
-    {# ===== HEADER ===== #}
-    <header class="text-center py-4 border-bottom border-primary">
-        <h1 class="display-4 fw-bold text-primary">
-            <i class="bi bi-controller"></i> GameStream
-        </h1>
-        <p class="text-secondary">Votre ludothèque, partout, à tout moment.</p>
-    </header>
-
-    {# ===== NAVBAR ===== #}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-primary">
-        <div class="container">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{{ path('app_game_index') }}">
-                            <i class="bi bi-controller"></i> Ludothèque
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ path('app_search') }}">
-                            <i class="bi bi-search"></i> Recherche
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
     {# ===== FILTRES PAR GENRE ===== #}
     <div class="container py-3">
         <div class="d-flex flex-wrap justify-content-center gap-2">
             <a href="{{ path('app_game_index') }}"
-            class="btn {{ selectedGenre is null and playedFilter is null ? 'btn-primary' : 'btn-outline-primary' }} rounded-pill">
+               class="btn {{ selectedGenre is null and playedFilter is null ? 'btn-primary' : 'btn-outline-primary' }} rounded-pill">
                 Tous les jeux
             </a>
 
             {% for genre in genres %}
                 <a href="{{ path('app_game_index', {genre: genre.id}) }}"
-                class="btn {{ selectedGenre == genre.id ? 'btn-primary' : 'btn-outline-primary' }} rounded-pill">
+                   class="btn {{ selectedGenre == genre.id ? 'btn-primary' : 'btn-outline-primary' }} rounded-pill">
                     {{ genre.name }}
                 </a>
             {% endfor %}
 
             <a href="{{ path('app_game_index', {played: 1}) }}"
-            class="btn {{ playedFilter == '1' ? 'btn-primary' : 'btn-outline-primary' }} rounded-pill">
+               class="btn {{ playedFilter == '1' ? 'btn-primary' : 'btn-outline-primary' }} rounded-pill">
                 <i class="bi bi-eye"></i>
             </a>
 
             <a href="{{ path('app_game_index', {played: 0}) }}"
-            class="btn {{ playedFilter == '0' ? 'btn-primary' : 'btn-outline-primary' }} rounded-pill">
+               class="btn {{ playedFilter == '0' ? 'btn-primary' : 'btn-outline-primary' }} rounded-pill">
                 <i class="bi bi-clock"></i>
             </a>
         </div>
@@ -69,13 +38,13 @@
             {% if playedFilter is not null %}{% set currentParams = currentParams|merge({played: playedFilter}) %}{% endif %}
 
             <a href="{{ path('app_game_index', currentParams|merge({view: 'grid'})) }}"
-            class="btn btn-sm {{ view == 'grid' ? 'btn-primary' : 'btn-outline-primary' }}"
-            title="Affichage en cartes">
+               class="btn btn-sm {{ view == 'grid' ? 'btn-primary' : 'btn-outline-primary' }}"
+               title="Affichage en cartes">
                 <i class="bi bi-grid-3x3-gap-fill"></i> Cartes
             </a>
             <a href="{{ path('app_game_index', currentParams|merge({view: 'list'})) }}"
-            class="btn btn-sm {{ view == 'list' ? 'btn-primary' : 'btn-outline-primary' }}"
-            title="Affichage en tableau">
+               class="btn btn-sm {{ view == 'list' ? 'btn-primary' : 'btn-outline-primary' }}"
+               title="Affichage en tableau">
                 <i class="bi bi-list-ul"></i> Tableau
             </a>
         </div>
@@ -110,10 +79,10 @@
                                 <td style="width: 80px;">
                                     {% if game.backgroundImage %}
                                         <img src="{{ game.backgroundImage }}" alt="{{ game.title }}"
-                                            style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                                             style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
                                     {% else %}
                                         <div class="d-flex align-items-center justify-content-center bg-secondary"
-                                            style="width: 60px; height: 60px; border-radius: 8px;">
+                                             style="width: 60px; height: 60px; border-radius: 8px;">
                                             <i class="bi bi-controller"></i>
                                         </div>
                                     {% endif %}
@@ -174,9 +143,4 @@
             </div>
         {% endif %}
     </main>
-
-    {# ===== FOOTER ===== #}
-    <footer class="text-center py-4 mt-5 border-top border-primary">
-        <p class="text-secondary mb-0">© 2026 GameStream - Votre ludothèque personnelle</p>
-    </footer>
 {% endblock %}
