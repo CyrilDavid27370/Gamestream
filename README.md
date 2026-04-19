@@ -29,6 +29,8 @@ Ce projet est inspire du cahier des charges **CineStream+** (plateforme de VOD),
 - Authentification complete (inscription, connexion, deconnexion, remember me)
 - Ludotheque privee par utilisateur avec isolation des donnees
 - Protection d'acces : impossibilite de voir/modifier les jeux d'un autre utilisateur
+- Page profil utilisateur : consultation, modification email, changement mot de passe
+- Validations completes cote serveur (User, Genre, Game) avec messages d'erreur en francais
 
 ## Stack technique
 
@@ -100,12 +102,12 @@ Identifiants MySQL : admin / password / gamestream
 
 ## Architecture du projet
 
-- src/Controller/ : GameController, SearchController, GenreController, SecurityController, RegistrationController
-- src/Entity/ : User, Game, Genre
-- src/Form/ : GameType, GenreType, RegistrationFormType
+- src/Controller/ : GameController, SearchController, GenreController, SecurityController, RegistrationController, ProfileController
+- src/Entity/ : User (avec createdAt), Game, Genre
+- src/Form/ : GameType, GenreType, RegistrationFormType, EditEmailFormType, ChangePasswordFormType
 - src/Service/ : RawgService, YouTubeService (avec cache Symfony)
 - src/Repository/ : repositories Doctrine
-- templates/ : base.html.twig centralise header/navbar/footer, templates specifiques par page
+- templates/ : base.html.twig centralise header/navbar/footer, templates specifiques par page (game, genre, search, security, registration, profile)
 
 ## Choix techniques
 
@@ -127,6 +129,8 @@ Identifiants MySQL : admin / password / gamestream
 - Echappement automatique Twig (prevention XSS)
 - Isolation des donnees par utilisateur
 - Protection d'acces aux ressources (AccessDeniedException)
+- Validations serveur strictes (novalidate HTML5 + contraintes Symfony)
+- Verification de l'ancien mot de passe avant modification
 
 **Pattern Service** : RawgService et YouTubeService pour separer la logique metier de l'API.
 
