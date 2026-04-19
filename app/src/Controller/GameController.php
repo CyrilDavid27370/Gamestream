@@ -21,7 +21,9 @@ final class GameController extends AbstractController
         $playedFilter = $request->query->get('played');
         $view = $request->query->get('view', 'grid');
 
-        $criteria = [];
+        // 🔐 Filtrage par user connecté
+        $criteria = ['user' => $this->getUser()];
+
         if ($genreId) {
             $criteria['genre'] = $genreId;
         }
@@ -42,8 +44,13 @@ final class GameController extends AbstractController
     }
 
     #[Route('/game/{id}', name: 'app_game_show', requirements: ['id' => '\d+'])]
-    public function show (Game $game): Response
+    public function show(Game $game): Response
     {
+        // 🔐 Empêcher l'accès aux jeux d'autres users
+        if ($game->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Ce jeu ne vous appartient pas.');
+        }
+
         return $this->render('game/show.html.twig', [
             'game' => $game,
         ]);
@@ -52,19 +59,29 @@ final class GameController extends AbstractController
     #[Route('/game/{id}/delete', name: 'app_game_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function delete(Request $request, Game $game, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$game->getId(), $request->request->get('_token'))) {
+        // 🔐 Empêcher la suppression des jeux d'autres users
+        if ($game->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Ce jeu ne vous appartient pas.');
+        }
+
+        if ($this->isCsrfTokenValid('delete' . $game->getId(), $request->request->get('_token'))) {
             $entityManager->remove($game);
             $entityManager->flush();
 
             $this->addFlash('success', 'Le jeu "' . $game->getTitle() . '" a été supprimé de votre ludothèque.');
-    }
+        }
 
-            return $this->redirectToRoute('app_game_index');
+        return $this->redirectToRoute('app_game_index');
     }
 
     #[Route('/game/{id}/update', name: 'app_game_update', requirements: ['id' => '\d+'])]
     public function update(Request $request, Game $game, EntityManagerInterface $entityManager): Response
     {
+        // 🔐 Empêcher la modification des jeux d'autres users
+        if ($game->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('Ce jeu ne vous appartient pas.');
+        }
+
         $form = $this->createForm(GameType::class, $game);
         $form->handleRequest($request);
 

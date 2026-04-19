@@ -75,6 +75,11 @@ public function show(
             return $this->redirectToRoute('app_search');
         }
 
+        $existingGame = $gameRepository->findOneBy([
+            'rawgId' => $rawgId,
+            'user' =>$this->getUser(),
+        ]);
+
         $existingGame = $gameRepository->findOneBy(['rawgId' => $rawgId]);
         if ($existingGame) {
             $this->addFlash('warning', 'Ce jeu est déjà dans votre ludothèque.');
@@ -90,6 +95,7 @@ public function show(
         $game->setReleased(isset($data['released']) ? new \DateTime($data['released']) : null);
         $game->setPlaytime($data['playtime'] ?? null);
         $game->setOverview($data['description_raw'] ?? null);
+        $game->setUser($this->getUser());
 
         if (!empty($data['platforms'])) {
             $platformNames = array_map(fn($p) => $p['platform']['name'], $data['platforms']);
@@ -101,6 +107,8 @@ public function show(
 
         $youtubeTrailer = $youTubeService->searchTrailer($data['name']);
         $game->setYoutubeUrl($youtubeTrailer);
+
+        $game->setUser($this->getUser());
 
         $entityManager->persist($game);
         $entityManager->flush();
