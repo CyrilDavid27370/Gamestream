@@ -47,6 +47,12 @@ class Game
     #[ORM\Column(nullable: true)]
     private ?int $rating = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $trailerUrl = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $youtubeUrl = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -180,6 +186,30 @@ class Game
     public function setRating(?int $rating): static
     {
         $this->rating = $rating;
+
+        return $this;
+    }
+
+    public function getTrailerUrl(): ?string
+    {
+        return $this->trailerUrl;
+    }
+
+    public function setTrailerUrl(?string $trailerUrl): static
+    {
+        $this->trailerUrl = $trailerUrl;
+
+        return $this;
+    }
+
+    public function getYoutubeUrl(): ?string
+    {
+        return $this->youtubeUrl;
+    }
+
+    public function setYoutubeUrl(?string $youtubeUrl): static
+    {
+        $this->youtubeUrl = $youtubeUrl;
 
         return $this;
     }

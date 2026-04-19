@@ -25,14 +25,14 @@
                 {# Détails à droite #}
                 <div class="col-md-8">
                     <div class="card-body">
-                        {# En-tête avec titre + boutons action #}
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <h2 class="text-primary mb-0">{{ game.title }}</h2>
                             <div>
                                 <a href="{{ path('app_game_update', {id: game.id}) }}" class="btn btn-outline-warning btn-sm" title="Modifier">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <form method="post" action="{{ path('app_game_delete', {id: game.id}) }}"
+                                <form method="post"
+                                    action="{{ path('app_game_delete', {id: game.id}) }}"
                                     onsubmit="return confirm('Supprimer « {{ game.title }} » de votre ludothèque ?')"
                                     style="display: inline;">
                                     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ game.id) }}">
@@ -43,7 +43,6 @@
                             </div>
                         </div>
 
-                        {# Métadonnées #}
                         <p class="text-secondary mb-3">
                             <i class="bi bi-calendar"></i> {{ game.released ? game.released|date('Y') : 'n/c' }}
                             {% if game.playtime %}
@@ -58,7 +57,6 @@
                             </span>
                         </p>
 
-                        {# Note personnelle #}
                         {% if game.rating %}
                             <p class="mb-3">
                                 <span class="badge bg-warning fs-6">
@@ -67,27 +65,56 @@
                             </p>
                         {% endif %}
 
-                        {# Plateformes #}
                         {% if game.platforms %}
                             <p class="text-secondary mb-3">
                                 <i class="bi bi-pc-display"></i> <strong>Plateformes :</strong> {{ game.platforms }}
                             </p>
                         {% endif %}
 
+                        {# Trailer #}
+                        {% if game.trailerUrl %}
+                            <div class="mb-3">
+                                <h6 class="text-primary">
+                                    <i class="bi bi-play-circle"></i> Bande-annonce
+                                </h6>
+
+                                <div class="ratio ratio-16x9 rounded-3 overflow-hidden shadow">
+                                    {% if 'youtube.com/embed/' in game.trailerUrl %}
+                                        <iframe
+                                            src="{{ game.trailerUrl }}"
+                                            class="w-100 h-100 border-0"
+                                            title="Bande-annonce YouTube"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen>
+                                        </iframe>
+                                    {% else %}
+                                        <video controls class="w-100 h-100">
+                                            <source src="{{ game.trailerUrl }}" type="video/mp4">
+                                            Votre navigateur ne supporte pas la lecture vidéo.
+                                        </video>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+
                         {# Description personnelle #}
                         <div class="card bg-dark border-primary mb-3">
                             <div class="card-body">
-                                <h6 class="text-primary"><i class="bi bi-chat-quote"></i> Ma description</h6>
+                                <h6 class="text-primary">
+                                    <i class="bi bi-chat-quote"></i> Ma description
+                                </h6>
                                 <p class="text-light fst-italic mb-0">
                                     {{ game.description ?? 'Aucune description personnelle.' }}
                                 </p>
                             </div>
                         </div>
 
-                        {# Synopsis RAWG #}
+                        {# Synopsis #}
                         {% if game.overview %}
                             <div>
-                                <h6 class="text-primary"><i class="bi bi-file-text"></i> Synopsis</h6>
+                                <h6 class="text-primary">
+                                    <i class="bi bi-file-text"></i> Synopsis
+                                </h6>
                                 <p class="text-light">{{ game.overview }}</p>
                             </div>
                         {% endif %}
@@ -96,7 +123,6 @@
             </div>
         </div>
 
-        {# Bouton retour #}
         <div class="text-center mt-4">
             <a href="{{ path('app_game_index') }}" class="btn btn-outline-primary rounded-pill">
                 <i class="bi bi-arrow-left"></i> Retour à la ludothèque

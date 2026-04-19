@@ -31,21 +31,34 @@ final class SearchController extends AbstractController
     }
 
     #[Route('/search/{rawgId}', name: 'app_search_show', requirements: ['rawgId' => '\d+'])]
-    public function show(int $rawgId, RawgService $rawgService, YouTubeService $youTubeService): Response
-    {
-        $game = $rawgService->getGameById($rawgId);
-        $movies = $rawgService->getGameMovies($rawgId);
+public function show(
+    int $rawgId,
+    RawgService $rawgService,
+    YouTubeService $youTubeService,
+    GameRepository $gameRepository,
+    EntityManagerInterface $em
+): Response {
+    $gameData = $rawgService->getGameById($rawgId);
+    $movies = $rawgService->getGameMovies($rawgId);
 
-        $youtubeTrailer = null;
+    $gameEntity = $gameRepository->findOneBy(['rawgId' => $rawgId]);
+    $youtubeTrailer = null;
 
-        if (empty($movies)) {
-            $youtubeTrailer = $youTubeService->searchTrailer($game['name']);
+    if ($gameEntity && $gameEntity->getYoutubeUrl()) {
+        $youtubeTrailer = $gameEntity->getYoutubeUrl();
+    } elseif (empty($movies)) {
+        $youtubeTrailer = $youTubeService->searchTrailer($gameData['name']);
+
+        if ($youtubeTrailer && $gameEntity) {
+            $gameEntity->setYoutubeUrl($youtubeTrailer);
+            $em->flush();
+        }
     }
 
-        return $this->render('search/show.html.twig', [
-            'game' => $game,
-            'movies' => $movies,
-            'youtubeTrailer' => $youtubeTrailer,
+    return $this->render('search/show.html.twig', [
+        'game' => $gameData,
+        'movies' => $movies,
+        'youtubeTrailer' => $youtubeTrailer,
     ]);
 }
     #[Route('/search/{rawgId}/add', name: 'app_search_add', requirements: ['rawgId' => '\d+'], methods: ['POST'])]
@@ -53,6 +66,7 @@ final class SearchController extends AbstractController
         int $rawgId,
         Request $request,
         RawgService $rawgService,
+        YouTubeService $youTubeService,
         GameRepository $gameRepository,
         EntityManagerInterface $entityManager
     ): Response {
@@ -84,6 +98,9 @@ final class SearchController extends AbstractController
 
         $game->setIsPlayed(false);
         $game->setDescription(null);
+
+        $youtubeTrailer = $youTubeService->searchTrailer($data['name']);
+        $game->setYoutubeUrl($youtubeTrailer);
 
         $entityManager->persist($game);
         $entityManager->flush();
