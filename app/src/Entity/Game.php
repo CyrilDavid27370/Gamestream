@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\GameRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: GameRepository::class)]
 class Game
@@ -15,9 +16,16 @@ class Game
     private ?int $id = null;
 
     #[ORM\Column]
+    #[Assert\NotBlank(message: 'L\'identifiant RAWG est obligatoire.')]
+    #[Assert\Positive(message: 'L\'identifiant RAWG doit être positif.')]
     private ?int $rawgId = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le titre est obligatoire.')]
+    #[Assert\Length(
+    max: 255,
+    maxMessage: 'Le titre ne peut pas dépasser {{ limit }} caractères.'
+)]
     private ?string $title = null;
 
     #[ORM\Column(length: 500, nullable: true)]
@@ -33,9 +41,17 @@ class Game
     private ?string $platforms = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(
+    max: 5000,
+    maxMessage: 'Le synopsis ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $overview = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(
+    max: 2000,
+    maxMessage: 'Votre description ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $description = null;
 
     #[ORM\Column]
@@ -45,6 +61,11 @@ class Game
     private ?Genre $genre = null;
 
     #[ORM\Column(nullable: true)]
+    #[Assert\Range(
+    min: 1,
+    max: 10,
+    notInRangeMessage: 'La note doit être entre {{ min }} et {{ max }}.'
+)]
     private ?int $rating = null;
 
     #[ORM\Column(length: 255, nullable: true)]
