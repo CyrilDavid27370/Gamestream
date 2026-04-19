@@ -69,19 +69,20 @@
                                     <i class="bi bi-person-plus"></i> S'inscrire
                                 </a>
                             </li>
-                        {# Si connecté : email + Déconnexion #}
+
+                        {# Si connecté : lien vers profil + Déconnexion #}
                         {% else %}
                             <li class="nav-item">
-                                <span class="nav-link">
+                                <a class="nav-link" href="{{ path('app_profile') }}">
                                     <i class="bi bi-person-circle"></i> {{ app.user.email }}
-                                </span>
+                                </a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ path('app_logout') }}">
                                     <i class="bi bi-box-arrow-right"></i> Déconnexion
                                 </a>
                             </li>
-                        {% endif %}
+                    {% endif %}
                     </ul>
                 </div>
             </div>

@@ -20,7 +20,8 @@ class RawgService
      * @return array Liste des jeux trouvés
      */
     public function searchGames(string $query): array
-    {
+{
+    try {
         $response = $this->httpClient->request('GET', self::API_URL . '/games', [
             'query' => [
                 'key' => $this->apiKey,
@@ -32,14 +33,19 @@ class RawgService
         $data = $response->toArray();
 
         return $data['results'] ?? [];
+    } catch (\Exception $e) {
+        // L'API RAWG est indisponible → on renvoie un tableau vide
+        return [];
     }
+}
 
     /**
      * Récupère les détails complets d'un jeu par son ID RAWG
      * @return array Détails complets du jeu
      */
     public function getGameById(int $rawgId): array
-    {
+{
+    try {
         $response = $this->httpClient->request('GET', self::API_URL . '/games/' . $rawgId, [
             'query' => [
                 'key' => $this->apiKey,
@@ -47,7 +53,10 @@ class RawgService
         ]);
 
         return $response->toArray();
+    } catch (\Exception $e) {
+        return [];
     }
+}
 
     /**
      * Récupère les trailers/vidéos d'un jeu par son ID RAWG

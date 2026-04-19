@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon profil - GameStream{% endblock %}
+
+{% block body %}
+    <main class="container py-4">
+        <div class="card shadow rounded-4 overflow-hidden border border-primary" style="max-width: 600px; margin: 0 auto;">
+            <div class="card-body p-4">
+                <h2 class="text-primary text-center mb-4">
+                    <i class="bi bi-person-circle"></i> Mon profil
+                </h2>
+
+                <div class="mb-4">
+                    <h6 class="text-primary"><i class="bi bi-envelope"></i> Adresse email</h6>
+                    <p class="text-light">{{ user.email }}</p>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="text-primary"><i class="bi bi-calendar-check"></i> Membre depuis</h6>
+                    <p class="text-light">{{ user.createdAt|date('d/m/Y à H:i') }}</p>
+                </div>
+
+                <div class="mb-4">
+                    <h6 class="text-primary"><i class="bi bi-controller"></i> Ma ludothèque</h6>
+                    <p class="text-light">
+                        <span class="badge bg-primary fs-6">{{ gameCount }} jeu(x)</span>
+                    </p>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="d-grid gap-2">
+                    <a href="{{ path('app_profile_edit_email') }}" class="btn btn-outline-primary rounded-pill">
+                        <i class="bi bi-pencil"></i> Modifier mon email
+                    </a>
+                    <a href="{{ path('app_profile_change_password') }}" class="btn btn-outline-primary rounded-pill">
+                        <i class="bi bi-key"></i> Changer mon mot de passe
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

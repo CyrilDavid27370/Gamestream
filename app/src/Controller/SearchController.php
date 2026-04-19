@@ -19,14 +19,20 @@ final class SearchController extends AbstractController
     {
         $query = $request->query->get('q');
         $games = [];
+        $apiError = false;
 
         if ($query) {
             $games = $rawgService->searchGames($query);
+
+            if (empty($games)) {
+                $apiError = true;
+            }
         }
 
         return $this->render('search/index.html.twig', [
             'query' => $query,
             'games' => $games,
+            'apiError' =>$apiError,
         ]);
     }
 
