@@ -35,8 +35,8 @@
     </nav>
 
 {# ===== FILTRES PAR GENRE ===== #}
-<div class="container py-3">
-    <div class="d-flex flex-wrap justify-content-center gap-2">
+        <div class="container py-3">
+            <div class="d-flex flex-wrap justify-content-center gap-2">
         {# Bouton "Tous les jeux" #}
         <a href="{{ path('app_game_index') }}"
         class="btn {{ selectedGenre is null and playedFilter is null ? 'btn-primary' : 'btn-outline-primary' }} rounded-pill">
@@ -93,6 +93,9 @@
                         <small class="text-secondary">
                             <i class="bi bi-calendar"></i>
                             {{ game.released ? game.released|date('Y') : 'n/c' }}
+                            {% if game.rating %}
+                                · <i class="bi bi-star-fill text-warning"></i> {{ game.rating }}/10
+                            {% endif %}
                         </small>
                         <span class="badge {{ game.isPlayed ? 'bg-success' : 'bg-warning' }}">
                             {{ game.isPlayed ? '👁️ Joué' : '🕒 À jouer' }}

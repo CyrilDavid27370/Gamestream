@@ -85,6 +85,15 @@
                             </span>
                         </p>
 
+                        {# Note personnelle #}
+                        {% if game.rating %}
+                            <p class="mb-3">
+                                <span class="badge bg-warning fs-6">
+                                    <i class="bi bi-star-fill"></i> Ma note : {{ game.rating }}/10
+                                </span>
+                            </p>
+                        {% endif %}
+
                         {# Plateformes #}
                         {% if game.platforms %}
                             <p class="text-secondary mb-3">

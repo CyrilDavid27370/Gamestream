@@ -44,6 +44,9 @@ class Game
     #[ORM\ManyToOne]
     private ?Genre $genre = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $rating = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -165,6 +168,18 @@ class Game
     public function setGenre(?Genre $genre): static
     {
         $this->genre = $genre;
+
+        return $this;
+    }
+
+    public function getRating(): ?int
+    {
+        return $this->rating;
+    }
+
+    public function setRating(?int $rating): static
+    {
+        $this->rating = $rating;
 
         return $this;
     }
