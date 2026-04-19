@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Game;
 use App\Repository\GameRepository;
 use App\Service\RawgService;
+use App\Service\YouTubeService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,39 +17,45 @@ final class SearchController extends AbstractController
     #[Route('/search', name: 'app_search')]
     public function index(Request $request, RawgService $rawgService): Response
     {
+        $query = $request->query->get('q');
+        $games = [];
 
-            $query = $request->query->get('q');
-            $games = [];
+        if ($query) {
+            $games = $rawgService->searchGames($query);
+        }
 
-            if ($query) {
-                $games = $rawgService->searchGames($query);
-            }
-
-    return $this->render('search/index.html.twig', [
+        return $this->render('search/index.html.twig', [
             'query' => $query,
             'games' => $games,
         ]);
     }
 
     #[Route('/search/{rawgId}', name: 'app_search_show', requirements: ['rawgId' => '\d+'])]
-    public function show(int $rawgId, RawgService $rawgService): Response
+    public function show(int $rawgId, RawgService $rawgService, YouTubeService $youTubeService): Response
     {
         $game = $rawgService->getGameById($rawgId);
+        $movies = $rawgService->getGameMovies($rawgId);
+
+        $youtubeTrailer = null;
+
+        if (empty($movies)) {
+            $youtubeTrailer = $youTubeService->searchTrailer($game['name']);
+    }
 
         return $this->render('search/show.html.twig', [
             'game' => $game,
-        ]);
-    }
-
+            'movies' => $movies,
+            'youtubeTrailer' => $youtubeTrailer,
+    ]);
+}
     #[Route('/search/{rawgId}/add', name: 'app_search_add', requirements: ['rawgId' => '\d+'], methods: ['POST'])]
     public function add(
         int $rawgId,
         Request $request,
         RawgService $rawgService,
         GameRepository $gameRepository,
-        EntityManagerInterface $entityManager): Response
-    {
-
+        EntityManagerInterface $entityManager
+    ): Response {
         if (!$this->isCsrfTokenValid('add_game_' . $rawgId, $request->request->get('_token'))) {
             $this->addFlash('danger', 'Token invalide.');
             return $this->redirectToRoute('app_search');

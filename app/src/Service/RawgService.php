@@ -48,4 +48,26 @@ class RawgService
 
         return $response->toArray();
     }
+
+    /**
+     * Récupère les trailers/vidéos d'un jeu par son ID RAWG
+     * @return array Liste des vidéos (trailers, gameplay...)
+     */
+    public function getGameMovies(int $rawgId): array
+    {
+        try {
+            $response = $this->httpClient->request('GET', self::API_URL . '/games/' . $rawgId . '/movies', [
+                'query' => [
+                    'key' => $this->apiKey,
+                ],
+            ]);
+
+            $data = $response->toArray();
+
+            return $data['results'] ?? [];
+        } catch (\Exception $e) {
+            // Si l'API ne renvoie pas de vidéos (cas fréquent pour les vieux jeux), on renvoie un tableau vide
+            return [];
+        }
+    }
 }
