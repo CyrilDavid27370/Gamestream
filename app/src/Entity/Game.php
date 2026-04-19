@@ -53,6 +53,9 @@ class Game
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $youtubeUrl = null;
 
+    #[ORM\ManyToOne(inversedBy: 'games')]
+    private ?User $user = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -210,6 +213,18 @@ class Game
     public function setYoutubeUrl(?string $youtubeUrl): static
     {
         $this->youtubeUrl = $youtubeUrl;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

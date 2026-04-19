@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion - GameStream{% endblock %}
+
+{% block body %}
+    <main class="container py-4">
+        <div class="card shadow rounded-4 overflow-hidden border border-primary" style="max-width: 450px; margin: 0 auto;">
+            <div class="card-body p-4">
+                <h2 class="text-primary text-center mb-4">
+                    <i class="bi bi-box-arrow-in-right"></i> Connexion
+                </h2>
+
+                {% if error %}
+                    <div class="alert alert-danger text-center">
+                        {{ error.messageKey|trans(error.messageData, 'security') }}
+                    </div>
+                {% endif %}
+
+                <form method="post">
+                    <div class="mb-3">
+                        <label for="inputEmail" class="form-label">
+                            <i class="bi bi-envelope"></i> Adresse email
+                        </label>
+                        <input type="email"
+                            name="_username"
+                            id="inputEmail"
+                            class="form-control form-control-lg"
+                            placeholder="votre@email.com"
+                            autocomplete="email"
+                            required
+                            autofocus>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="inputPassword" class="form-label">
+                            <i class="bi bi-lock"></i> Mot de passe
+                        </label>
+                        <input type="password"
+                                name="_password"
+                                id="inputPassword"
+                                class="form-control form-control-lg"
+                                placeholder="••••••••"
+                                autocomplete="current-password"
+                                required>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox"
+                                class="form-check-input"
+                                id="remember_me"
+                                name="_remember_me">
+                        <label class="form-check-label" for="remember_me">
+                            Se souvenir de moi
+                        </label>
+                    </div>
+
+                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary rounded-pill px-4 w-100">
+                            <i class="bi bi-box-arrow-in-right"></i> Se connecter
+                        </button>
+                    </div>
+                </form>
+
+                <hr class="my-4">
+
+                <p class="text-center mb-0">
+                    Pas encore de compte ?
+                    <a href="{{ path('app_register') }}" class="text-primary">
+                        S'inscrire
+                    </a>
+                </p>
+            </div>
+        </div>
+    </main>
+{% endblock %}
