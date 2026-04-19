@@ -19,6 +19,7 @@ final class GameController extends AbstractController
     {
         $genreId = $request->query->get('genre');
         $playedFilter = $request->query->get('played');
+        $view = $request->query->get('view', 'grid');
 
         $criteria = [];
         if ($genreId) {
@@ -36,6 +37,7 @@ final class GameController extends AbstractController
             'genres' => $genre->findAll(),
             'selectedGenre' => $genreId,
             'playedFilter' => $playedFilter,
+            'view' => $view,
         ]);
     }
 

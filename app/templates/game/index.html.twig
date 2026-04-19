@@ -34,36 +34,52 @@
         </div>
     </nav>
 
-{# ===== FILTRES PAR GENRE ===== #}
-        <div class="container py-3">
-            <div class="d-flex flex-wrap justify-content-center gap-2">
-        {# Bouton "Tous les jeux" #}
-        <a href="{{ path('app_game_index') }}"
-        class="btn {{ selectedGenre is null and playedFilter is null ? 'btn-primary' : 'btn-outline-primary' }} rounded-pill">
-            Tous les jeux
-        </a>
-
-        {# Boutons Genres #}
-        {% for genre in genres %}
-            <a href="{{ path('app_game_index', {genre: genre.id}) }}"
-            class="btn {{ selectedGenre == genre.id ? 'btn-primary' : 'btn-outline-primary' }} rounded-pill">
-                {{ genre.name }}
+    {# ===== FILTRES PAR GENRE ===== #}
+    <div class="container py-3">
+        <div class="d-flex flex-wrap justify-content-center gap-2">
+            <a href="{{ path('app_game_index') }}"
+            class="btn {{ selectedGenre is null and playedFilter is null ? 'btn-primary' : 'btn-outline-primary' }} rounded-pill">
+                Tous les jeux
             </a>
-        {% endfor %}
 
-        {# Bouton "Joué" #}
-        <a href="{{ path('app_game_index', {played: 1}) }}"
-        class="btn {{ playedFilter == '1' ? 'btn-primary' : 'btn-outline-primary' }} rounded-pill">
-            <i class="bi bi-eye"></i>
-        </a>
+            {% for genre in genres %}
+                <a href="{{ path('app_game_index', {genre: genre.id}) }}"
+                class="btn {{ selectedGenre == genre.id ? 'btn-primary' : 'btn-outline-primary' }} rounded-pill">
+                    {{ genre.name }}
+                </a>
+            {% endfor %}
 
-        {# Bouton "À jouer" #}
-        <a href="{{ path('app_game_index', {played: 0}) }}"
-        class="btn {{ playedFilter == '0' ? 'btn-primary' : 'btn-outline-primary' }} rounded-pill">
-            <i class="bi bi-clock"></i>
-        </a>
+            <a href="{{ path('app_game_index', {played: 1}) }}"
+            class="btn {{ playedFilter == '1' ? 'btn-primary' : 'btn-outline-primary' }} rounded-pill">
+                <i class="bi bi-eye"></i>
+            </a>
+
+            <a href="{{ path('app_game_index', {played: 0}) }}"
+            class="btn {{ playedFilter == '0' ? 'btn-primary' : 'btn-outline-primary' }} rounded-pill">
+                <i class="bi bi-clock"></i>
+            </a>
+        </div>
     </div>
-</div>
+
+    {# ===== CHOIX DE L'AFFICHAGE ===== #}
+    <div class="container py-2">
+        <div class="d-flex justify-content-center gap-2">
+            {% set currentParams = {} %}
+            {% if selectedGenre %}{% set currentParams = currentParams|merge({genre: selectedGenre}) %}{% endif %}
+            {% if playedFilter is not null %}{% set currentParams = currentParams|merge({played: playedFilter}) %}{% endif %}
+
+            <a href="{{ path('app_game_index', currentParams|merge({view: 'grid'})) }}"
+            class="btn btn-sm {{ view == 'grid' ? 'btn-primary' : 'btn-outline-primary' }}"
+            title="Affichage en cartes">
+                <i class="bi bi-grid-3x3-gap-fill"></i> Cartes
+            </a>
+            <a href="{{ path('app_game_index', currentParams|merge({view: 'list'})) }}"
+            class="btn btn-sm {{ view == 'list' ? 'btn-primary' : 'btn-outline-primary' }}"
+            title="Affichage en tableau">
+                <i class="bi bi-list-ul"></i> Tableau
+            </a>
+        </div>
+    </div>
 
     {# ===== MAIN ===== #}
     <main class="container py-4">
@@ -74,41 +90,90 @@
                 <i class="bi bi-controller fs-1"></i>
                 <p class="mt-2 mb-0">Votre ludothèque est vide. Commencez votre collection !</p>
             </div>
+        {% elseif view == 'list' %}
+            {# ===== AFFICHAGE EN TABLEAU ===== #}
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">Affiche</th>
+                            <th scope="col">Titre</th>
+                            <th scope="col">Année</th>
+                            <th scope="col">Genre</th>
+                            <th scope="col">Note</th>
+                            <th scope="col">Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for game in games %}
+                            <tr onclick="window.location='{{ path('app_game_show', {id: game.id}) }}'" style="cursor: pointer;">
+                                <td style="width: 80px;">
+                                    {% if game.backgroundImage %}
+                                        <img src="{{ game.backgroundImage }}" alt="{{ game.title }}"
+                                            style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                                    {% else %}
+                                        <div class="d-flex align-items-center justify-content-center bg-secondary"
+                                            style="width: 60px; height: 60px; border-radius: 8px;">
+                                            <i class="bi bi-controller"></i>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td><strong>{{ game.title }}</strong></td>
+                                <td>{{ game.released ? game.released|date('Y') : 'n/c' }}</td>
+                                <td>{{ game.genre ? game.genre.name : 'n/c' }}</td>
+                                <td>
+                                    {% if game.rating %}
+                                        <i class="bi bi-star-fill text-warning"></i> {{ game.rating }}/10
+                                    {% else %}
+                                        <span class="text-secondary">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge {{ game.isPlayed ? 'bg-success' : 'bg-warning' }}">
+                                        {{ game.isPlayed ? '👁️ Joué' : '🕒 À jouer' }}
+                                    </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% else %}
+            {# ===== AFFICHAGE EN CARTES ===== #}
             <div class="row g-4 justify-content-center">
                 {% for game in games %}
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                    <a href="{{ path('app_game_show', {id: game.id}) }}" class="text-decoration-none text-reset">
-                <div class="card h-100 shadow rounded-4 overflow-hidden">
-                {% if game.backgroundImage %}
-                    <img src="{{ game.backgroundImage }}" class="card-img-top" alt="{{ game.title }}" style="height: 200px; object-fit: cover;">
-                {% else %}
-                    <div class="card-img-top d-flex align-items-center justify-content-center bg-secondary" style="height: 200px;">
-                        <i class="bi bi-controller" style="font-size: 4rem;"></i>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                        <a href="{{ path('app_game_show', {id: game.id}) }}" class="text-decoration-none text-reset">
+                            <div class="card h-100 shadow rounded-4 overflow-hidden">
+                                {% if game.backgroundImage %}
+                                    <img src="{{ game.backgroundImage }}" class="card-img-top" alt="{{ game.title }}" style="height: 200px; object-fit: cover;">
+                                {% else %}
+                                    <div class="card-img-top d-flex align-items-center justify-content-center bg-secondary" style="height: 200px;">
+                                        <i class="bi bi-controller" style="font-size: 4rem;"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="card-body">
+                                    <h5 class="card-title text-truncate">{{ game.title }}</h5>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-secondary">
+                                            <i class="bi bi-calendar"></i>
+                                            {{ game.released ? game.released|date('Y') : 'n/c' }}
+                                            {% if game.rating %}
+                                                · <i class="bi bi-star-fill text-warning"></i> {{ game.rating }}/10
+                                            {% endif %}
+                                        </small>
+                                        <span class="badge {{ game.isPlayed ? 'bg-success' : 'bg-warning' }}">
+                                            {{ game.isPlayed ? '👁️ Joué' : '🕒 À jouer' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
                     </div>
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title text-truncate">{{ game.title }}</h5>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-secondary">
-                            <i class="bi bi-calendar"></i>
-                            {{ game.released ? game.released|date('Y') : 'n/c' }}
-                            {% if game.rating %}
-                                · <i class="bi bi-star-fill text-warning"></i> {{ game.rating }}/10
-                            {% endif %}
-                        </small>
-                        <span class="badge {{ game.isPlayed ? 'bg-success' : 'bg-warning' }}">
-                            {{ game.isPlayed ? '👁️ Joué' : '🕒 À jouer' }}
-                        </span>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
-        </a>
-    </div>
-{% endfor %}
-</div>
-{% endif %}
-</main>
+        {% endif %}
+    </main>
 
     {# ===== FOOTER ===== #}
     <footer class="text-center py-4 mt-5 border-top border-primary">
